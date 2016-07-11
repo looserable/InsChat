@@ -653,6 +653,7 @@
 
 
 #pragma mark 获取群组标签
+//TODO: 李小涛，经过查证，RoomModel的count 为1，而书签房间的数量为2才导致的这个的问题。
 - (void)fetchRoomBookmarks
 {
     NSLog(@"获取以添加标签群组...");

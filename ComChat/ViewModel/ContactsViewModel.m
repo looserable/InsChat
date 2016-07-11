@@ -122,7 +122,7 @@
     
     [x addChild:formType];
     [x addChild:userName];
-//    开始的时候这里没有将name 和email 加入到子结点中导致的搜索失败。所以切记搜索的各个条件一定要加的完整。
+    //TODO: 李小涛添加   开始的时候这里没有将name 和email 加入到子结点中导致的搜索失败。所以切记搜索的各个条件一定要加的完整。
     [x addChild:name];
     [x addChild:email];
     [x addChild:search];

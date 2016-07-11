@@ -16,7 +16,7 @@
 #import "RoomSearchViewController.h"
 
 
-@interface RoomsViewController ()
+@interface RoomsViewController ()<UISearchBarDelegate>
 
 @end
 

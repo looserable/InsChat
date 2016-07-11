@@ -9,7 +9,7 @@
 #ifndef ComChat_Macros_h
 #define ComChat_Macros_h
 
-#if 1
+#if 0
 #define XMPP_DOMAIN         @"localhost.localdomain"
 #define XMPP_HOST_NAME      @"219.232.254.209"
 //219.232.254.209

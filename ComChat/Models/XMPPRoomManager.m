@@ -130,6 +130,10 @@ static const int xmppLogLevel = XMPP_LOG_LEVEL_WARN;
     
     field = [NSXMLElement elementWithName:@"field"];
     [field addAttributeWithName:@"var" stringValue:@"muc#role"];
+    //TODO: 李小涛添加
+//    [field addAttributeWithName:@"type" stringValue:@"text-single"];
+//    [field addAttributeWithName:@"label" stringValue:@"Requested role"];
+    
     [field addChild:[NSXMLElement elementWithName:@"value" stringValue:@"participant"]];
     [x addChild:field];
     

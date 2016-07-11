@@ -666,7 +666,7 @@
  **/
 - (void)xmppStream:(XMPPStream *)sender didSendIQ:(XMPPIQ *)iq
 {
-    NSLog(@"XMPPManager xmppStream已发送IQ包");
+    NSLog(@"XMPPManager xmppStream已发送IQ包%@",iq);
 }
 
 - (void)xmppStream:(XMPPStream *)sender didSendMessage:(XMPPMessage *)message

@@ -209,6 +209,7 @@ static XMPPJID *currentGroupJid = nil;
 {
     NSLog(@"群组聊天设置...");
     RoomProfileViewController *roomProfileViewController = [[RoomProfileViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    
     [roomProfileViewController initWithRoomJID:[GroupChatViewController currentGroupJid]];
     [self.navigationController pushViewController:roomProfileViewController animated:YES];
 }
