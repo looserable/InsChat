@@ -566,9 +566,9 @@
             [self.inviteContactsModel addObject:from];
             self.unsubscribedCountNum = [NSNumber numberWithInt:self.unsubscribedCountNum.intValue + 1];
         }
-
-        //[[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_SUBSCRIBED_COUNT_NUM" object:self userInfo:@{@"scribeNum" : self.unsubscribedCountNum}];
-        //[[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_RELOAD_DATA" object:self userInfo:nil];
+        //TODO: 李小涛，这里原来是注释的部分。
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_SUBSCRIBED_COUNT_NUM" object:self userInfo:@{@"scribeNum" : self.unsubscribedCountNum}];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_RELOAD_DATA" object:self userInfo:nil];
     } else if ([[presence type] isEqualToString:@"unsubscribe"]) {
         NSLog(@"对方请求解除好友关系...");
         

@@ -31,5 +31,8 @@
 #define DEVICETOKEN         @"deviceToken"
 #define ICON_COUNT          @"iconCount"
 
+#define SCREEN_WIDHT [[UIScreen mainScreen] bounds].size.width
+#define SCREEN_HEIGHT [[UIScreen mainScreen] bounds].size.height
+
 
 #endif

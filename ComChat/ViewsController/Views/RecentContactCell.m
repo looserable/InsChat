@@ -43,6 +43,8 @@
         [self.contentView addSubview:_headImage];
         self.headImage.layer.cornerRadius = 3.f;
         self.headImage.clipsToBounds = YES;
+        self.headImage.layer.cornerRadius = 25;
+        self.headImage.layer.masksToBounds = YES;
         
         // 联系人名称
         self.userName = [[UILabel alloc] init];
@@ -131,16 +133,19 @@
                                             textMaxWidth, self.userMessage.font.lineHeight);
     
     // 头像
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_async(queue, ^{
-        
-        NSData *photoData = [[[XMPPManager sharedManager] xmppvCardAvatarModule]
-                             photoDataForJID:self.contact.bareJid];
-        if (photoData != nil)
-            self.headImage.image = [UIImage imageWithData:photoData];
-        else
-            self.headImage.image = [UIImage imageNamed:@"user_head_default"];
-    });
+    NSData *photoData = [[[XMPPManager sharedManager] xmppvCardAvatarModule]
+                         photoDataForJID:self.contact.bareJid];
+    if (photoData != nil)
+        self.headImage.image = [UIImage imageWithData:photoData];
+    else
+        self.headImage.image = [UIImage imageNamed:@"user_head_default"];
+    
+//    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+//    dispatch_async(queue, ^{
+//        
+//        
+//        
+//    });
 
 }
 

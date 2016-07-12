@@ -64,12 +64,23 @@
         [self.contactsViewModel.updatedContentSignal subscribeNext:^(id x) {
             @strongify(self);
             dispatch_async(dispatch_get_main_queue(), ^{
+                
                 [self.tableView reloadData];
             });
         }];
-        //[[NSNotificationCenter defaultCenter] addObserver:self                                                 selector:@selector(resetUnsubcribeContactCountNofity:)                                                     name:@"RESET_UNSUBSCRIBE_CONTACT_COUNT"                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(setUnsubscribedCountNum:)
+                                                     name:@"FRIENDS_INVITE_SUBSCRIBED_COUNT_NUM"
+                                                   object:nil];
+        //TODO: 李小涛，这里原来是注释的部分。
+//        [[NSNotificationCenter defaultCenter] addObserver:self                                                 selector:@selector(resetUnsubcribeContactCountNofity:)                                                     name:@"RESET_UNSUBSCRIBE_CONTACT_COUNT"                                                   object:nil];
     }
     return self;
+}
+
+- (void)setUnsubscribedCountNum:(NSNotification *)noti{
+    [self.contactsHeaderView setUnsubscribedCountNum:self.contactsViewModel.unsubscribedCountNum];
 }
 
 
@@ -115,13 +126,13 @@
 
 
 #pragma mark 重置未添加联系人数目
-- (void)resetUnsubcribeContactCountNofity:(NSNotification *)nofify
-{
-    id object = nofify.object;
-    if ([object isKindOfClass:[XMPPJID class]]) {
-        [self.contactsHeaderView setUnsubscribedCountNum:object];
-    }
-}
+//- (void)resetUnsubcribeContactCountNofity:(NSNotification *)nofify
+//{
+//    id object = nofify.object;
+//    if ([object isKindOfClass:[XMPPJID class]]) {
+//        [self.contactsHeaderView setUnsubscribedCountNum:object];
+//    }
+//}
 
 
 #pragma mark 点击添加好友

@@ -68,6 +68,7 @@
     self.tabBar.opaque = YES;
     
 //    这块儿真的是666
+    //TODO: 李小涛，这里是将tabbarItem 的 badgeValue 加入观察者，也就是说，当messageViewController的viewModel的totalUnreadMessagesNum 发生变化的时候，这里的UI 会自动刷新。
     RAC(messageNavController.tabBarItem, badgeValue) = [RACObserve(messageViewController.messageViewModel, totalUnreadMessagesNum)
                                                    map:^id(NSNumber *value) {
                                                        if ([value intValue] > 0) {

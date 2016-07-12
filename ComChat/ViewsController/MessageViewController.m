@@ -133,7 +133,7 @@
     id object = nofify.object;
     if ([object isKindOfClass:[XMPPJID class]]) {
         XMPPJID *roomJid = (XMPPJID *)object;
-        //[self.messageViewModel resetUnreadMessageCountForCurrentRoom:roomJid];
+        [self.messageViewModel resetUnreadMessageCountForCurrentRoom:roomJid];
     }
 }
 

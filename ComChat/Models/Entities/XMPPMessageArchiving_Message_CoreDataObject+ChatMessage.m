@@ -28,6 +28,13 @@ static const char kPrimitiveSectionIdentifier;
     if (!chatMessage) {
         chatMessage = [ChatMessageEntityFactory messageFromJSONString:self.body];
         chatMessage.isOutgoing = self.isOutgoing;
+        //TODO: 李小涛添加，用来给发送消息的id 赋值，从而在chatCell 里面取出名片中的photo 字段，给头像赋值
+            //如果是自己发送的话，只能去streamBareJidStr，如果是别人发送的话，去sendJid；
+        if (self.isOutgoing) {
+            chatMessage.sendJid = [XMPPJID jidWithString:self.streamBareJidStr];
+        }else{
+            chatMessage.sendJid = self.bareJid;
+        }
         if (chatMessage) {
             objc_setAssociatedObject(self, &kChatMessageKey, chatMessage, OBJC_ASSOCIATION_RETAIN);
         }

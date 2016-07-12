@@ -9,11 +9,12 @@
 #import "ProfileViewController.h"
 #import "UIViewAdditions.h"
 #import "XMPPManager.h"
+#import "XMPPvCardTemp.h"
 #import <XMPPPresence.h>
 
 #define CellIndentifier         @"ProfileCell"
 
-@interface ProfileViewController ()<UIActionSheetDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface ProfileViewController ()<UIActionSheetDelegate, UITableViewDelegate, UITableViewDataSource,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @property (nonatomic, strong) NSIndexPath *indexPath;
 
@@ -67,10 +68,14 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self setHidesBottomBarWhenPushed:NO];
-    [super viewWillAppear:animated];
+    [super viewWillDisappear:animated];
+    
 
 }
 
+-(void)dealloc{
+    [[XMPPManager sharedManager].xmppvCardTempModule removeDelegate:self delegateQueue:dispatch_get_main_queue()];
+}
 #pragma mark 选择用户头像
 - (IBAction)selectHeadImage:(id)sender
 {
@@ -152,7 +157,8 @@
             picker.delegate = self;
             //设置选择后的图片可被编辑
             picker.allowsEditing = YES;
-            [self.navigationController pushViewController:picker animated:YES];
+            //TODO: 李小涛修改，这里原本是self.navigationController进行的push操作，但是由于不能从一个navigationcontroller push到另一个navigationcontroller，所以这里应该用present。
+            [self.navigationController presentViewController:picker animated:YES completion:^{}];
             break;
         }
 
@@ -187,7 +193,8 @@
         UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
     }
     NSLog(@"更改用户头像...");
-//    [self.chatViewModel sendMessageWithImage:image];        // 发送图片
+    //TODO: 上传头像
+    [self uploadHeadImg:image];
     
     [picker dismissViewControllerAnimated:YES completion:^{}];
 }
@@ -255,9 +262,20 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier forIndexPath:indexPath];
     
     if (indexPath.section == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"user_head_default"];
-        cell.imageView.centerX = cell.centerX;
-        cell.textLabel.text = [XMPPManager sharedManager].myJID.user;       // TODO:仅显示用户名
+        NSData *photoData = [[[XMPPManager sharedManager] xmppvCardAvatarModule]
+                             photoDataForJID:[XMPPManager sharedManager].myJID];
+        UIImageView * headImgView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 5, 50, 50)];
+        headImgView.layer.cornerRadius = 25;
+        headImgView.layer.masksToBounds = YES;
+        [cell.contentView addSubview:headImgView];
+        if (photoData) {
+            headImgView.image = [UIImage imageWithData:photoData];
+        }else{
+            headImgView.image = [UIImage imageNamed:@"user_head_default"];
+        }
+        UILabel * label = [[UILabel alloc]initWithFrame:CGRectMake(70, 10, self.view.frame.size.width - 80, 40)];
+        [cell.contentView addSubview:label];
+        label.text = [XMPPManager sharedManager].myJID.user;       // TODO:仅显示用户名
     }
     
     if (indexPath.section == 1) {
@@ -352,6 +370,45 @@
     else
         return 40;
 }
+
+- (void)uploadHeadImg:(UIImage *)image {
+    
+    XMPPvCardTempModule * xmppvCardTempModule = [XMPPManager sharedManager].xmppvCardTempModule;
+    [xmppvCardTempModule addDelegate:self delegateQueue:dispatch_get_main_queue()];
+    
+    XMPPvCardAvatarModule * xmppvCardAvatarModule = [[XMPPvCardAvatarModule alloc] initWithvCardTempModule:xmppvCardTempModule];
+
+    
+    [xmppvCardAvatarModule addDelegate:self delegateQueue:dispatch_get_main_queue()];
+    dispatch_queue_t  global_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_async(global_queue, ^{
+        NSString *xmppName = [NSString stringWithFormat:@"%d", 101];
+        
+        NSXMLElement *vCardXML = [NSXMLElement elementWithName:@"vCard"];
+        [vCardXML addAttributeWithName:@"xmlns" stringValue:@"vcard-temp"];
+        NSXMLElement *photoXML = [NSXMLElement elementWithName:@"PHOTO"];
+        NSXMLElement *typeXML = [NSXMLElement elementWithName:@"TYPE" stringValue:@"image/jpeg"];
+        
+        NSData *dataFromImage = UIImageJPEGRepresentation(image, .3);//图片放缩
+        NSXMLElement *binvalXML = [NSXMLElement elementWithName:@"BINVAL" stringValue:[dataFromImage base64EncodedStringWithOptions:0]];
+        [photoXML addChild:typeXML];
+        [photoXML addChild:binvalXML];
+        [vCardXML addChild:photoXML];
+        
+        XMPPvCardTemp * myvCardTemp = xmppvCardTempModule.myvCardTemp;
+        
+        if (myvCardTemp) {
+            myvCardTemp.photo = dataFromImage;
+            [xmppvCardTempModule updateMyvCardTemp:myvCardTemp];
+        } else {
+            XMPPvCardTemp *newvCardTemp = [XMPPvCardTemp vCardTempFromElement:vCardXML];
+            newvCardTemp.nickname = xmppName;
+            [xmppvCardTempModule updateMyvCardTemp:newvCardTemp];
+        }
+    });
+}
+
+
 
 
 

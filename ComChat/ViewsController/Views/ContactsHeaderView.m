@@ -114,10 +114,10 @@
         // 背景颜色
         self.backgroundColor = [UIColor clearColor];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(setUnsubscribedCountNum:)
-                                                     name:@"FRIENDS_INVITE_SUBSCRIBED_COUNT_NUM"
-                                                   object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(setUnsubscribedCountNum:)
+//                                                     name:@"FRIENDS_INVITE_SUBSCRIBED_COUNT_NUM"
+//                                                   object:nil];
         
     }
     return self;
@@ -178,7 +178,9 @@
 {
     if ([unsubscribedCountNum intValue] > 0) {
         self.badgeView.hidden = NO;
-        self.badgeView.badgeText = unsubscribedCountNum.stringValue;
+        //self.badgeView.badgeText = unsubscribedCountNum.stringValue;
+        //TODO: 上面的方法只适用于初始化的时侯并且赋值，而下面的方法适用于第一次赋值之后的再次赋值。
+        [self.badgeView autoBadgeSizeWithString:unsubscribedCountNum.stringValue];
     }
     else {
         self.badgeView.hidden = YES;

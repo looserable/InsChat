@@ -12,6 +12,8 @@
 #import "Macros.h"
 #import <MBProgressHUD.h>
 #import "XMPPManager.h"
+#import <RACSubject.h>
+#import <ReactiveCocoa.h>
 #import "MainTabBarController.h"
 
 @interface SignInViewController ()<UITextFieldDelegate>
@@ -20,6 +22,7 @@
     NSString *userPW;
     
     MBProgressHUD* HUD;
+    UIImageView* logoImage;
 }
 
 @property (nonatomic, assign) BOOL isSignIn;
@@ -41,6 +44,7 @@
     self = [super init];
     if (self) {
         [[XMPPManager sharedManager].xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
+
     }
     return self;
 }
@@ -59,9 +63,11 @@
     [bgImage setImage:[UIImage imageNamed:@"login_bg.jpg"]];
     
     /* 设置LOGO */
-    UIImageView* logoImage = [[UIImageView alloc] initWithFrame:CGRectMake((screenBounds.size.width - 90) / 2, 40, 90, 90)];
-    [logoImage setImage:[UIImage imageNamed:@"user_head_default"]];
     
+    logoImage = [[UIImageView alloc] initWithFrame:CGRectMake((screenBounds.size.width - 90) / 2, 40, 90, 90)];
+    logoImage.layer.cornerRadius = 45;
+    logoImage.layer.masksToBounds = YES;
+   
     
     /* 设置用户名输入框 */
     _userIDField = [[UITextField alloc] initWithFrame:CGRectMake(2, 150, screenBounds.size.width - 4, 40)];
@@ -127,6 +133,16 @@
     
     _userIDField.text = [[NSUserDefaults standardUserDefaults] objectForKey:XMPP_USER_ID];
     _userPWField.text = [[NSUserDefaults standardUserDefaults]objectForKey:XMPP_PASSWORD];
+    
+    NSString * jidStr = [NSString stringWithFormat:@"%@@%@",_userIDField.text,XMPP_DOMAIN];
+    XMPPJID *userJID = [XMPPJID jidWithString:jidStr];
+    NSData *photoData = [[[XMPPManager sharedManager] xmppvCardAvatarModule]
+                         photoDataForJID:userJID];
+    if (photoData) {
+        logoImage.image = [UIImage imageWithData:photoData];
+    }else{
+        logoImage.image = [UIImage imageNamed:@"user_head_default"];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -249,6 +265,19 @@
 //屏幕下移
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
+    
+    if ([textField isEqual:_userIDField]) {
+        NSString * jidStr = [NSString stringWithFormat:@"%@@%@",textField.text,XMPP_DOMAIN];
+        XMPPJID *userJID = [XMPPJID jidWithString:jidStr];
+        NSData *photoData = [[[XMPPManager sharedManager] xmppvCardAvatarModule]
+                             photoDataForJID:userJID];
+        if (photoData) {
+            logoImage.image = [UIImage imageWithData:photoData];
+        }else{
+            logoImage.image = [UIImage imageNamed:@"user_head_default"];
+        }
+    }
+    
     [self animateTextField:textField up:NO];
 }
 

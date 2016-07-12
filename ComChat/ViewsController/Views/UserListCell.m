@@ -8,6 +8,7 @@
 
 #import "UserListCell.h"
 #import "XMPPManager.h"
+#import "Macros.h"
 
 typedef void (^ContactCompleteBlock)(BOOL complete);
 
@@ -37,7 +38,7 @@ typedef void (^ContactCompleteBlock)(BOOL complete);
         self.headImage = [[UIImageView alloc] initWithFrame:CGRectMake(5.f, 5.f, 37, 37)];
         self.headImage.image = [UIImage imageNamed:@"user_head_default"];
         [self.contentView addSubview:_headImage];
-        self.headImage.layer.cornerRadius = 3.f;
+        self.headImage.layer.cornerRadius = 37/2.0;
         self.headImage.clipsToBounds = YES;
         
         // 用户名称
@@ -75,10 +76,12 @@ typedef void (^ContactCompleteBlock)(BOOL complete);
         XMPPUserCoreDataStorageObject *user = (XMPPUserCoreDataStorageObject *)object;
         self.contact = user;
         // 设置用户头像
-        if (!self.contact.photo) {
+        NSData * photoData = [[XMPPManager sharedManager].xmppvCardAvatarModule photoDataForJID:user.jid];
+        
+        if (!photoData) {
             self.headImage.image = [UIImage imageNamed:@"user_head_default"];
         } else {
-            self.headImage.image = self.contact.photo;
+            self.headImage.image = [UIImage imageWithData:photoData];
         }
         
         // 设置用户名称
@@ -101,18 +104,15 @@ typedef void (^ContactCompleteBlock)(BOOL complete);
 {
     if ([object isKindOfClass:[NSString class]]) {
         NSString *userJid = (NSString *)object;
-        //XMPPJID *userJID = [XMPPJID jidWithString:userJid];
-        //[[XMPPManager sharedManager].xmppvCardTempModule fetchvCardTempForJID:userJID ignoreStorage:YES];
-        
-        /*
-        // 设置用户头像
-        if (!self.contact.photo) {
+        XMPPJID *userJID = [XMPPJID jidWithString:[NSString stringWithFormat:@"%@@%@",userJid,XMPP_DOMAIN]];
+        NSData * photoData = [[XMPPManager sharedManager].xmppvCardAvatarModule photoDataForJID:userJID];
+        //TODO: 李小涛修改过，关于userJID的取法。
+//         设置用户头像
+        if (!photoData) {
             self.headImage.image = [UIImage imageNamed:@"user_head_default"];
         } else {
-            self.headImage.image = self.contact.photo;
+            self.headImage.image = [UIImage imageWithData:photoData];
         }
-        */
-        self.headImage.image = [UIImage imageNamed:@"user_head_default"];
         // 设置用户名称
         self.userName.text = userJid;
     }

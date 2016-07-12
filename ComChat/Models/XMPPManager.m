@@ -55,8 +55,11 @@
     
     
     /* 设置电子名片vCard */
+    //电子名片的本地存储
     _xmppvCardStorage = [XMPPvCardCoreDataStorage sharedInstance];
+    //电子名片的本地操作
     _xmppvCardTempModule = [[XMPPvCardTempModule alloc] initWithvCardStorage:_xmppvCardStorage];
+    //好友头像
     _xmppvCardAvatarModule = [[XMPPvCardAvatarModule alloc] initWithvCardTempModule:_xmppvCardTempModule];
     
     /* 设置功能 */

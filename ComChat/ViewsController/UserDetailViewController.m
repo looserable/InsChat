@@ -13,6 +13,7 @@
 #import "UIView+Toast.h"
 #import "AddContactViewController.h"
 #import <MBProgressHUD.h>
+#import "XMPPvCardTemp.h"
 
 
 @interface UserDetailViewController ()<MBProgressHUDDelegate>
@@ -31,6 +32,7 @@
 
 @property (nonatomic, assign) BOOL isFriend;
 @property (nonatomic, assign) BOOL isSelf;
+
 
 
 @end
@@ -195,13 +197,29 @@
         }
         case 1:
         {
-            cell.imageView.image = [UIImage imageNamed:@"user_head_default"];
-            cell.textLabel.text = self.userName;
+//            cell.imageView.image = [UIImage imageNamed:@"user_head_default"];
+//            cell.textLabel.text = self.userName;
+            UIImageView * headImgVC = [[UIImageView alloc]initWithFrame:CGRectMake(15, 0, 70, 70)];
+            headImgVC.layer.cornerRadius = 35;
+            headImgVC.layer.masksToBounds = YES;
+            [cell.contentView addSubview:headImgVC];
+            
+            UILabel * userLabel = [[UILabel alloc]initWithFrame:CGRectMake(100, 20, SCREEN_WIDHT - 115, 30)];
+            [cell.contentView addSubview:userLabel];
+            NSData * photoData = [[XMPPManager sharedManager].xmppvCardAvatarModule photoDataForJID:[XMPPJID jidWithString:self.userJID]];
+            if (photoData) {
+                headImgVC.image = [UIImage imageWithData:photoData];
+            }else{
+                headImgVC.image = [UIImage imageNamed:@"user_head_default"];
+            }
+            userLabel.text = self.userName;
+            
             break;
         }
         case 2:
         {
             cell.textLabel.text = @"用户昵称";
+            
             cell.detailTextLabel.text = self.userName;
             break;
         }

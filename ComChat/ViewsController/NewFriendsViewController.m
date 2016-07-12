@@ -228,6 +228,7 @@
     static NSString *newFriendsCellIdentifier = @"UserListCell";
     
     id object = [self.contactsViewModel objectAtNewIndexPath:indexPath];
+    
     NewFriendsCell *newFriendsCell = [tableView dequeueReusableCellWithIdentifier:newFriendsCellIdentifier];
     
     if (!newFriendsCell) {

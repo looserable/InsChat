@@ -28,7 +28,8 @@ typedef NS_ENUM(NSUInteger, ChatMessageType) {
 
 @property (nonatomic, assign) ChatMessageType type;
 @property (nonatomic, assign) BOOL isOutgoing;
-
+//TODO: 李小涛添加，用来解决聊天页面的头像的显示的问题。
+@property (nonatomic, retain) XMPPJID * sendJid;
 @end
 
 #pragma mark 定义文本类

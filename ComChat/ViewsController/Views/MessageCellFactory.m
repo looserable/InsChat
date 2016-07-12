@@ -21,6 +21,8 @@
 #import <UIImageView+AFNetworking.h>
 #import <ASIHTTPRequest.h>
 #import "ResourceManager.h"
+#import "XMPPManager.h"
+#import "XMPPvCardTemp.h"
 
 
 @implementation MessageCellFactory
@@ -53,6 +55,8 @@
         self.headView = [[UIButton alloc] initWithFrame:CGRectMake(0.f, 0.f, 40.f, 40.f)];
         [self.headView setImage:[UIImage imageNamed:@"user_head_default"] forState:UIControlStateNormal];
         [self.headView addTarget:self action:@selector(showUserInfo:) forControlEvents:UIControlEventTouchUpInside];
+        self.headView.layer.cornerRadius = 20;
+        self.headView.layer.masksToBounds = YES;
         [self.contentView addSubview:self.headView];
         
         
@@ -129,14 +133,19 @@
     if ([object isKindOfClass:[ChatMessageBaseEntity class]]) {
         ChatMessageBaseEntity *entity = (ChatMessageBaseEntity *)object;
         
+        NSData *photoData = [[[XMPPManager sharedManager] xmppvCardAvatarModule]
+                             photoDataForJID:entity.sendJid];
+        
         // TODO
         /* 根据发送和接收设置用户头像 */
         if (entity.isOutgoing) {
-            [self.headView setImage:[UIImage imageNamed:@"user_head_default"] forState:UIControlStateNormal];
+            [self.headView setImage:[UIImage imageWithData:photoData] forState:UIControlStateNormal];
+            
         }
         else {
             if ([ChatViewController currentBuddyJid]) {
-                [self.headView setImage:[UIImage imageNamed:@"user_head_default"] forState:UIControlStateNormal];
+            [self.headView setImage:[UIImage imageWithData:photoData] forState:UIControlStateNormal];
+
             }
         }
     }
