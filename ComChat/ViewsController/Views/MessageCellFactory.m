@@ -139,12 +139,20 @@
         // TODO
         /* 根据发送和接收设置用户头像 */
         if (entity.isOutgoing) {
-            [self.headView setImage:[UIImage imageWithData:photoData] forState:UIControlStateNormal];
+            if (photoData) {
+                [self.headView setImage:[UIImage imageWithData:photoData] forState:UIControlStateNormal];
+            }else{
+                [self.headView setImage:[UIImage imageNamed:@"user_head_default"] forState:UIControlStateNormal];
+            }
             
         }
         else {
             if ([ChatViewController currentBuddyJid]) {
-            [self.headView setImage:[UIImage imageWithData:photoData] forState:UIControlStateNormal];
+                if (photoData) {
+                    [self.headView setImage:[UIImage imageWithData:photoData] forState:UIControlStateNormal];
+                }else{
+                    [self.headView setImage:[UIImage imageNamed:@"user_head_default"] forState:UIControlStateNormal];
+                }
 
             }
         }

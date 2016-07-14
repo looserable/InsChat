@@ -30,6 +30,9 @@
 @property (nonatomic, strong) NSString *userNickName;
 @property (nonatomic, strong) NSString *userGroup;
 
+@property (nonatomic, strong) XMPPvCardTemp * vCard;
+
+
 @property (nonatomic, assign) BOOL isFriend;
 @property (nonatomic, assign) BOOL isSelf;
 
@@ -51,9 +54,34 @@
         
         [[XMPPManager sharedManager].xmppRoster addDelegate:self delegateQueue:dispatch_get_main_queue()];
         [[XMPPManager sharedManager].xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
+        [self getCard:self.userJID];
+        
     }
     return self;
 }
+
+
+- (void)getCard:(NSString *)jidStr{
+    
+    XMPPIQ *iq = [XMPPIQ iqWithType:@"get"];
+    [iq addAttributeWithName:@"to" stringValue:jidStr/*好友的jid*/];
+    NSXMLElement *vElement = [NSXMLElement elementWithName:@"vCard" xmlns:@"vcard-temp"];
+    [iq addChild:vElement];
+   // 通过xmppStream发送请求，重新下载vcard：
+    [[XMPPManager sharedManager].xmppStream sendElement:iq];
+   
+}
+
+- (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq{
+    
+    NSLog(@"==================名片:%@===============",iq);
+    
+    return YES;
+}
+
+
+
+
 
 
 - (void)dealloc
@@ -67,6 +95,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    
     
     self.navigationItem.title = @"个人资料";
     self.view.backgroundColor = [UIColor whiteColor];
@@ -88,6 +118,7 @@
 {
     [super viewWillAppear:animated];
     [self.tabBarController.tabBar setHidden:YES];
+    
 }
 
 
@@ -219,8 +250,8 @@
         case 2:
         {
             cell.textLabel.text = @"用户昵称";
-            
             cell.detailTextLabel.text = self.userName;
+            cell.detailTextLabel.text = self.vCard.nickname;
             break;
         }
         case 3:

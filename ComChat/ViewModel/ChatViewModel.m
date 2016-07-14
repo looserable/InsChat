@@ -284,9 +284,11 @@
 #pragma mark 设置谓词获取更早信息
 - (void)setPredicateForFetchEarlierMessage
 {
-    NSPredicate *filterPredicate1 = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"bareJidStr = '%@'", self.buddyJID.bare]];
-    NSPredicate *filterPredicate2 = [NSPredicate predicateWithFormat:@"%K < %@", @"timestamp", self.earlierDate];
-    NSArray *subPredicates = [NSArray arrayWithObjects:filterPredicate1, filterPredicate2, nil];
+    NSPredicate * filterPredicate1 = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"bareJidStr = '%@'", self.buddyJID.bare]];
+    NSPredicate * filterPredicate2 = [NSPredicate predicateWithFormat:@"%K < %@", @"timestamp", self.earlierDate];
+    //TODO: 李小涛，这里原来只是限定了它的接收人，那么假如，a send to b，切换登录c ，c 有好友 b 那么当点进去，则会出现 a send to b 的消息，所以这里应该限定接收人和发送人两个条件，从而避免切换登录后的混乱
+    NSPredicate * filterPredicate3 = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"streamBareJidStr = '%@'", [XMPPManager sharedManager].myJID.bare]];
+    NSArray *subPredicates = [NSArray arrayWithObjects:filterPredicate1, filterPredicate2,filterPredicate3, nil];
     NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];
     [self.fetchedEarlierResultsController.fetchRequest setPredicate:predicate];
 }

@@ -24,6 +24,7 @@
 @property (nonatomic, strong) UITextField *nickNameField;
 
 @property (nonatomic, retain) NSIndexPath *currentIndexPath;
+@property (nonatomic, strong) UIImage * headImg;
 
 
 @end
@@ -194,6 +195,7 @@
     }
     NSLog(@"更改用户头像...");
     //TODO: 上传头像
+    self.headImg = image;
     [self uploadHeadImg:image];
     
     [picker dismissViewControllerAnimated:YES completion:^{}];
@@ -267,6 +269,7 @@
         UIImageView * headImgView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 5, 50, 50)];
         headImgView.layer.cornerRadius = 25;
         headImgView.layer.masksToBounds = YES;
+        headImgView.tag = 10000;
         [cell.contentView addSubview:headImgView];
         if (photoData) {
             headImgView.image = [UIImage imageWithData:photoData];
@@ -406,6 +409,17 @@
             [xmppvCardTempModule updateMyvCardTemp:newvCardTemp];
         }
     });
+}
+
+- (void)xmppvCardTempModuleDidUpdateMyvCard:(XMPPvCardTempModule *)vCardTempModule{
+    NSLog(@"=================更新头像成功=======================");
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    UITableViewCell * cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    UIImageView * headImgVC = (UIImageView*)[cell viewWithTag:10000];
+    headImgVC.image = self.headImg;
+}
+- (void)xmppvCardTempModule:(XMPPvCardTempModule *)vCardTempModule failedToUpdateMyvCard:(NSXMLElement *)error{
+    NSLog(@"=================更新头像失败=======================");
 }
 
 

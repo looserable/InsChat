@@ -85,6 +85,7 @@ typedef void (^ContactCompleteBlock)(BOOL complete);
         }
         
         // 设置用户名称
+        //TODO: 这里内部framwork 应该自己实现的一个判断，nickname 有值的时候，那么displayname ＝ nickname ，否则就回等于 jidStr 处理后的name
         self.userName.text = self.contact.displayName;
         
         // 设置用户是否在线
