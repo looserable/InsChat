@@ -195,6 +195,9 @@
             }
 
             //[self pickBothFriendFromRosterArray:dataArray];
+        }else{
+            //TODO: 解决当只有一个好友并删除之后，页面的刷新的问题。
+            self.groupModel = [[NSMutableArray alloc]init];
         }
         [(RACSubject *)self.updatedContentSignal sendNext:nil];
     }
@@ -247,7 +250,12 @@
 - (BOOL)isExistInContactsList:(NSString *)userJid
 {
     for (XMPPUserCoreDataStorageObject *user in self.contactModel) {
+        
         if ([user.jidStr isEqualToString:userJid]) {
+            if ([user.subscription isEqualToString:@"none"]) {
+                NSLog(@"非好友");
+                return NO;
+            }
             return YES;
         }
     }
@@ -416,7 +424,6 @@
 - (NSInteger)numberOfSections
 {
     NSLog(@"用户分组数:%lu", (unsigned long)[self.groupModel count]);
-    
     return [self.groupModel count];
 }
 
@@ -486,6 +493,8 @@
 {
     return [self.inviteContactsModel objectAtIndex:indexPath.row];
 }
+
+#pragma mark --删除已添加的用户列表。
 
 
 #pragma mark 重置未添加新的好友数目

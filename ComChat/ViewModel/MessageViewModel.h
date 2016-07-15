@@ -40,4 +40,6 @@
 - (void)deleteObjectAtIndexPath:(NSIndexPath *)indexPath;
 - (void)deleteObjectOfRoomAtIndexPath:(NSIndexPath *)indexPath;
 
+- (void)deleteTalkWithJidStr:(NSString *)userJid;
+
 @end

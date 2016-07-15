@@ -19,6 +19,7 @@
 #import "RecentRoomsCell.h"
 #import "XMPPMessageArchiving_Contact_CoreDataObject+RecentContact.h"
 #import "XMPPRoomOccupantCoreDataStorageObject+RencentOccupant.h"
+#import "Macros.h"
 
 
 @interface MessageViewController ()<UISearchBarDelegate, UISearchDisplayDelegate> {
@@ -87,6 +88,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(deleteTalk:) name:NOTIFICATION_DELETE_TALK object:nil];
 
     [self.navigationController.navigationBar setBackgroundColor:[UIColor lightTextColor]];
     self.navigationItem.title = @"消息";
@@ -102,6 +105,17 @@
     [self.tableView addSubview:self.refreshControl];
     
     [self fetchContactsAndRoomsMessageAction];
+}
+
+- (void)deleteTalk:(NSNotification *)noti{
+    NSDictionary * userDic = noti.object;
+    
+    NSString * userJid = userDic[@"contactId"];
+    
+    [self.messageViewModel deleteTalkWithJidStr:userJid];
+    
+    
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated

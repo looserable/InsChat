@@ -54,30 +54,30 @@
         
         [[XMPPManager sharedManager].xmppRoster addDelegate:self delegateQueue:dispatch_get_main_queue()];
         [[XMPPManager sharedManager].xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
-        [self getCard:self.userJID];
+//        [self getCard:self.userJID];
         
     }
     return self;
 }
 
 
-- (void)getCard:(NSString *)jidStr{
-    
-    XMPPIQ *iq = [XMPPIQ iqWithType:@"get"];
-    [iq addAttributeWithName:@"to" stringValue:jidStr/*好友的jid*/];
-    NSXMLElement *vElement = [NSXMLElement elementWithName:@"vCard" xmlns:@"vcard-temp"];
-    [iq addChild:vElement];
-   // 通过xmppStream发送请求，重新下载vcard：
-    [[XMPPManager sharedManager].xmppStream sendElement:iq];
-   
-}
-
-- (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq{
-    
-    NSLog(@"==================名片:%@===============",iq);
-    
-    return YES;
-}
+//- (void)getCard:(NSString *)jidStr{
+//    
+//    XMPPIQ *iq = [XMPPIQ iqWithType:@"get"];
+//    [iq addAttributeWithName:@"to" stringValue:jidStr/*好友的jid*/];
+//    NSXMLElement *vElement = [NSXMLElement elementWithName:@"vCard" xmlns:@"vcard-temp"];
+//    [iq addChild:vElement];
+//   // 通过xmppStream发送请求，重新下载vcard：
+//    [[XMPPManager sharedManager].xmppStream sendElement:iq];
+//   
+//}
+//
+//- (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq{
+//    
+//    NSLog(@"==================名片:%@===============",iq);
+//    
+//    return YES;
+//}
 
 
 
@@ -251,7 +251,6 @@
         {
             cell.textLabel.text = @"用户昵称";
             cell.detailTextLabel.text = self.userName;
-            cell.detailTextLabel.text = self.vCard.nickname;
             break;
         }
         case 3:
@@ -341,7 +340,7 @@
 
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence
 {
-    NSLog(@"ContactsViewModel接收到Presence %@", [presence description]);
+    NSLog(@"userDetailViewController接收到Presence %@", [presence description]);
     
     // 请求加自己为好友
     if ([[presence type] isEqualToString:@"subscribe"]) {
@@ -351,14 +350,15 @@
         
     } else if ([[presence type] isEqualToString:@"unsubscribe"]) {
         NSLog(@"已发送解除好友关系...");
+        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DELETE_TALK object:@{@"contactId":self.userJID} userInfo:nil];
+        [self.view makeToast:@"已发送解除好友关系" duration:0.5 position:CSToastPositionTop];
         
-        [self.navigationController popViewControllerAnimated:YES];
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
 }
 
 
-/*
-- (void)xmppRoster:(XMPPRoster *)sender didReceiveRosterItem:(NSXMLElement *)item
+/*- (void)xmppRoster:(XMPPRoster *)sender didReceiveRosterItem:(NSXMLElement *)item
 {
     NSLog(@"AddContactViewController接收到Roster Item:%@", item);
     
@@ -370,9 +370,9 @@
         [self.view makeToast:@"已发送好友邀请" duration:0.5 position:CSToastPositionTop];
         
         [self.navigationController popViewControllerAnimated:YES];
-        /*
-        int index = [[self.navigationController viewControllers] indexOfObject:self];
-        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:index - 2] animated:YES];
+        
+//        int index = [[self.navigationController viewControllers] indexOfObject:self];
+//        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:index - 2] animated:YES];
  
     }
     
@@ -381,11 +381,13 @@
     if ([subscription isEqualToString:@"remove"]) {
         [self.view makeToast:@"已解除好友关系" duration:1.0 position:CSToastPositionCenter];
         
-        int index = [[self.navigationController viewControllers] indexOfObject:self];
-        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:index - 2] animated:YES];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+        
+//        int index = [[self.navigationController viewControllers] indexOfObject:self];
+//        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:index - 2] animated:YES];
     }
 }
-*/
+ */
 
 /*
 - (void)xmppRoster:(XMPPRoster *)sender didReceiveRosterItem:(NSXMLElement *)item

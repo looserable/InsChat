@@ -34,5 +34,7 @@
 #define SCREEN_WIDHT [[UIScreen mainScreen] bounds].size.width
 #define SCREEN_HEIGHT [[UIScreen mainScreen] bounds].size.height
 
+#define NOTIFICATION_DELETE_TALK @"deletetalk"
+
 
 #endif

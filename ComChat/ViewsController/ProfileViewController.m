@@ -392,7 +392,7 @@
         NSXMLElement *photoXML = [NSXMLElement elementWithName:@"PHOTO"];
         NSXMLElement *typeXML = [NSXMLElement elementWithName:@"TYPE" stringValue:@"image/jpeg"];
         
-        NSData *dataFromImage = UIImageJPEGRepresentation(image, .3);//图片放缩
+        NSData *dataFromImage = UIImageJPEGRepresentation(image, .1);//图片放缩
         NSXMLElement *binvalXML = [NSXMLElement elementWithName:@"BINVAL" stringValue:[dataFromImage base64EncodedStringWithOptions:0]];
         [photoXML addChild:typeXML];
         [photoXML addChild:binvalXML];

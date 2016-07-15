@@ -265,6 +265,19 @@
     return NO;
 }
 
+- (void)deleteTalkWithJidStr:(NSString *)userJid{
+    NSInteger i = 0;
+    //TODO: 李小涛添加的这个方法为了保证删除好友的时候，对话能够被一并删除。
+    for (XMPPMessageArchiving_Contact_CoreDataObject *contact in self.totalContactsMessageArray) {
+        if ([contact.bareJidStr isEqualToString:userJid]) {
+            NSIndexPath * indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+            [self deleteObjectAtIndexPath:indexPath];
+            break;
+        }
+        i ++;
+    }
+}
+
 
 
 #pragma mark 获取当前联系人
