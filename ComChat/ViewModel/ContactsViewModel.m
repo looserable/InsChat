@@ -15,6 +15,7 @@
 #import "Macros.h"
 #import "XMPP+IM.h"
 #import "XMPPRoomManager.h"
+#import "FriendInviteMsgModel.h"
 
 
 @interface ContactsViewModel()<NSFetchedResultsControllerDelegate>
@@ -22,7 +23,7 @@
 @property (nonatomic, strong) RACSubject *updatedContentSignal;
 @property (nonatomic, strong) NSMutableArray *contactModel;
 @property (nonatomic, strong) NSMutableArray *groupModel;
-@property (nonatomic, strong) NSMutableArray *inviteContactsModel;
+//@property (nonatomic, strong) NSMutableArray *inviteContactsModel;
 @property (nonatomic, strong) NSMutableArray *searchContactsModel;
 
 @property (nonatomic, assign) NSNumber *unsubscribedCountNum;
@@ -68,12 +69,15 @@
         self.inviteContactsModel = [[NSMutableArray alloc] init];
         self.unsubscribedCountNum = 0;
         
-        self.searchContactsModel = [[NSMutableArray alloc] initWithObjects:nil];
+        self.searchContactsModel = [[NSMutableArray alloc] init];
+        
+        [self createDB];
         
         @weakify(self)
         [self.didBecomeActiveSignal subscribeNext:^(id x) {
             @strongify(self)
             [self fetchUsers];
+//            [self fetchInviteList];
         }];
         
         RAC(self, active) = [RACObserve([XMPPManager sharedManager], myJID) map:^id(id value) {
@@ -82,9 +86,38 @@
             }
             return @(NO);
         }];
+        
+        
     }
     return self;
 }
+
+- (void)createDB{
+    
+    NSString *doc  = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    NSString *path = [doc stringByAppendingPathComponent:@"/FriendInviteMsgModel.db"];//注意不是:stringByAppendingString
+    
+    NSURL *url = [NSURL fileURLWithPath:path];
+    NSLog(@"-----------------------------------");
+    NSLog(@"data : %@",path);
+    
+    //创建文件,并且打开数据库文件
+    NSManagedObjectModel *model = [NSManagedObjectModel mergedModelFromBundles:nil];
+    NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
+    //给存储器指定存储的类型
+    NSError *error;
+    NSPersistentStore *store = [psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:url options:nil error:&error];
+    if (store == nil) {
+        [NSException raise:@"添加数据库错误" format:@"%@",[error localizedDescription]];
+    }
+    
+    //创建图形上下文
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    context.persistentStoreCoordinator = psc;
+    self.friendInviteContext = context;
+    
+}
+
 
 #pragma mark 搜索联系人
 - (void)searchContacts:(NSString *)searchTerm
@@ -149,7 +182,7 @@
     }
     else {
         NSArray *dataArray = [self.fetchedUsersResultsController fetchedObjects];
-        NSLog(@"获取到的好友数 = %d", dataArray.count);
+        NSLog(@"获取到的好友数 = %zi", dataArray.count);
         if (dataArray.count > 0) {
             if (!self.contactModel) {
                 self.contactModel = [[NSMutableArray alloc] initWithArray:dataArray];
@@ -398,6 +431,7 @@
 {
     //[self fetchGroups];
     [self fetchUsers];
+    [self fetchInviteList];
     [(RACSubject *)self.updatedContentSignal sendNext:nil];
 }
 
@@ -406,8 +440,14 @@
 #pragma mark 判断邀请人是否已经在邀请数组中
 - (BOOL)isExistedInInviteContactsModel:(NSMutableArray *)inviteContactsArray toFrom:(NSString *)from
 {
-    for (NSString *contact in inviteContactsArray) {
-        if ([contact isEqualToString:from]) {
+//    for (NSString *contact in inviteContactsArray) {
+//        if ([contact isEqualToString:from]) {
+//            return YES;
+//        }
+//    }
+    
+    for (FriendInviteMsgModel * friendMsg in inviteContactsArray) {
+        if ([friendMsg.userJid isEqualToString:from]) {
             return YES;
         }
     }
@@ -502,6 +542,16 @@
 {
     NSLog(@"重置未添加好友数目...");
     self.unsubscribedCountNum = @0;
+    
+    for (FriendInviteMsgModel * friendMsgModel in self.inviteContactsModel) {
+        friendMsgModel.isRead = @"1";
+    }
+    
+    NSError * error;
+    if (![self.friendInviteContext save:&error]) {
+        //重置未读的加好友的同伙列表
+        NSLog(@"%s,重置未读的未加好友的数量失败",__FUNCTION__);
+    }
 }
 
 
@@ -561,27 +611,86 @@
     return YES;
 }
 
+//- (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence
+//{
+//    NSLog(@"ContactsViewModel接收到Presence %@", [presence description]);
+////==//
+//    // 接收到好友请求
+//    if ([[presence type] isEqualToString:@"subscribe"]) {
+//        NSString *from = [NSString stringWithFormat:@"%@", [presence from]];
+//        
+//        NSLog(@"%@申请加您为好友", from);
+//        
+//        
+//        
+//        if (![self isExistedInInviteContactsModel:self.inviteContactsModel toFrom:from]) {
+//            [self.inviteContactsModel addObject:from];
+//            self.unsubscribedCountNum = [NSNumber numberWithInt:self.unsubscribedCountNum.intValue + 1];
+//        }
+//        //TODO: 李小涛，这里原来是注释的部分。
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_SUBSCRIBED_COUNT_NUM" object:self userInfo:@{@"scribeNum" : self.unsubscribedCountNum}];
+////        [[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_RELOAD_DATA" object:self userInfo:nil];
+//    } else if ([[presence type] isEqualToString:@"unsubscribe"]) {
+//        NSLog(@"对方请求解除好友关系...");
+//        
+//    }
+//}
+
+
+
+
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence
 {
     NSLog(@"ContactsViewModel接收到Presence %@", [presence description]);
-    
+    //==//
     // 接收到好友请求
     if ([[presence type] isEqualToString:@"subscribe"]) {
         NSString *from = [NSString stringWithFormat:@"%@", [presence from]];
         
         NSLog(@"%@申请加您为好友", from);
         
+        
         if (![self isExistedInInviteContactsModel:self.inviteContactsModel toFrom:from]) {
-            [self.inviteContactsModel addObject:from];
+            
+            FriendInviteMsgModel * friendMsg = [NSEntityDescription insertNewObjectForEntityForName:@"FriendInviteMsgModel" inManagedObjectContext:self.friendInviteContext];
+            friendMsg.userJid = from;
+            friendMsg.isRead = @"0";
+            friendMsg.isInvited = @"1";
+            friendMsg.isWaitingAccept = @"0";
+            friendMsg.keyId = [NSString stringWithFormat:@"%zi",self.inviteContactsModel.count + 1];
+            [self.inviteContactsModel addObject:friendMsg];
+            
+            NSError * error = nil;
+            if (![self.friendInviteContext save:&error]) {
+                NSLog(@"好友邀请，保存失败了");
+            }
             self.unsubscribedCountNum = [NSNumber numberWithInt:self.unsubscribedCountNum.intValue + 1];
+            //TODO: 李小涛，这里原来是注释的部分。
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_SUBSCRIBED_COUNT_NUM" object:self userInfo:@{@"scribeNum" : self.unsubscribedCountNum}];
+
+        }else{
+            
+            for (FriendInviteMsgModel * model in self.inviteContactsModel) {
+                if ([model.userJid isEqualToString:from]&& [model.isWaitingAccept isEqualToString:@"1"]) {
+                    [self deleteInviteUser:model.userJid];
+                }
+            }
         }
-        //TODO: 李小涛，这里原来是注释的部分。
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_SUBSCRIBED_COUNT_NUM" object:self userInfo:@{@"scribeNum" : self.unsubscribedCountNum}];
-//        [[NSNotificationCenter defaultCenter] postNotificationName:@"FRIENDS_INVITE_RELOAD_DATA" object:self userInfo:nil];
+        
+        
     } else if ([[presence type] isEqualToString:@"unsubscribe"]) {
         NSLog(@"对方请求解除好友关系...");
-        
+        NSString *from = [NSString stringWithFormat:@"%@", [presence from]];
+        for (FriendInviteMsgModel * model in self.inviteContactsModel) {
+            if ([model.userJid isEqualToString:from]&& [model.isWaitingAccept isEqualToString:@"1"]) {
+                [self deleteInviteUser:model.userJid];
+            }
+        }
     }
+    
+    
+    //用户接受了邀请，需要刷新
+    [self fetchUsers];
 }
 
 
@@ -616,6 +725,7 @@
 
 - (void)xmppRoster:(XMPPRoster *)sender didReceivePresenceSubscriptionRequest:(XMPPPresence *)presence
 {
+    
     NSLog(@"ContactsViewModel在线订阅请求, %@", [presence description]);
     
     
@@ -670,6 +780,85 @@
 - (void)xmppMUC:(XMPPMUC *)sender roomJID:(XMPPJID *) roomJID didReceiveInvitationDecline:(XMPPMessage *)message
 {
     NSLog(@"ContactsViewModel XMPPMUC Delegate 接收群组:%@到邀请拒绝:%@...", roomJID, message);
+}
+
+#pragma mark --fetchInviteListResultsController
+
+- (NSFetchedResultsController *)fetchInviteListResultsController{
+    
+    if (!_fetchInviteListResultsController) {
+        NSEntityDescription *entity = [NSEntityDescription entityForName:@"FriendInviteMsgModel" inManagedObjectContext:self.friendInviteContext];
+        //TODO: sortDescriptor是必须要有的。
+        NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"keyId" ascending:YES];       // 按时间排序
+        NSArray *sortDescriptors = [NSArray arrayWithObjects:sd, nil];
+        
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+        [fetchRequest setEntity:entity];
+        [fetchRequest setSortDescriptors:sortDescriptors];
+        
+        
+        
+        _fetchInviteListResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.friendInviteContext sectionNameKeyPath:nil cacheName:nil];
+        [_fetchInviteListResultsController setDelegate:self];
+    }
+    return _fetchInviteListResultsController;
+    
+}
+
+#pragma mark--获取到本地的被邀请以及主动邀请的列表。
+- (void)fetchInviteList{
+    
+    NSError *error = nil;
+    if (![self.fetchInviteListResultsController performFetch:&error]) {
+        NSLog(@"查询失败，失败原因:%@",error);
+    }else{
+        NSArray * dataArray = [self.fetchInviteListResultsController fetchedObjects];
+        
+        [self.inviteContactsModel removeAllObjects];
+
+        if (dataArray.count > 0) {
+            if (!self.inviteContactsModel) {
+                self.inviteContactsModel = [[NSMutableArray alloc]initWithArray:self.fetchInviteListResultsController.fetchedObjects];
+            }else{
+                [self.inviteContactsModel setArray:dataArray];
+            }
+        }
+        
+        for (FriendInviteMsgModel * friendInviteModel in dataArray) {
+            if ([friendInviteModel.isRead isEqualToString:@"0"] && [friendInviteModel.isWaitingAccept isEqualToString:@"0"]) {
+                NSLog(@"!!!!=================%@==============!!!!!",friendInviteModel.userJid);
+                self.unsubscribedCountNum = [NSNumber numberWithInt:self.unsubscribedCountNum.intValue + 1];
+            }
+        }
+        
+        [(RACSubject *)self.updatedContentSignal sendNext:nil];
+   
+    }
+}
+
+-(void)deleteInviteUser:(NSString *)userJid{
+    
+    NSPredicate *filterPredicate1 = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userJid == '%@'", userJid]];
+    NSArray *subPredicates = [NSArray arrayWithObjects:filterPredicate1,nil];
+    NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];
+    [self.fetchInviteListResultsController.fetchRequest setPredicate:predicate];
+        
+    NSError *error = nil;
+    if (![self.fetchInviteListResultsController performFetch:&error]) {
+        NSLog(@"获取联系人列表失败");
+    }
+    else {
+        NSArray * dataArray = [self.fetchInviteListResultsController fetchedObjects];
+        FriendInviteMsgModel * friendModel = [dataArray firstObject];
+        
+        [self.friendInviteContext deleteObject:friendModel];
+        NSError * error = nil;
+        
+        if (![self.friendInviteContext save:&error]) {
+            NSLog(@"删除失败");
+        }
+    }
+
 }
 
 

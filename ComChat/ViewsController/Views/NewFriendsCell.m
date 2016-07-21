@@ -32,9 +32,10 @@
         
         // 设置用户头像
         self.headImage = [[UIImageView alloc] initWithFrame:CGRectMake(3, 0, 40, 40)];
+        self.headImage.layer.cornerRadius = 20;
+        self.headImage.layer.masksToBounds = YES;
         self.headImage.image = [UIImage imageNamed:@"user_head_default"];
         [self.contentView addSubview:_headImage];
-        self.headImage.layer.cornerRadius = 3.f;
         self.headImage.centerY = self.centerY;
         self.headImage.clipsToBounds = YES;
         
@@ -54,24 +55,27 @@
         detailInfo.highlightedTextColor = detailInfo.textColor;
         detailInfo.top = self.userName.bottom + 3;
         detailInfo.left = self.headImage.right + 3;
+        detailInfo.tag  = 10003;
         [self.contentView addSubview:detailInfo];
         
         
         // 设置同意或拒绝状态
         self.agreeOrRejectSataus = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 63, 21)];
         [self addSubview:self.agreeOrRejectSataus];
-        [self.agreeOrRejectSataus setTextColor: [UIColor lightGrayColor]];
+        [self.agreeOrRejectSataus setTextColor: [UIColor purpleColor]];
         self.agreeOrRejectSataus.right = self.width - 10;
         self.agreeOrRejectSataus.centerY = self.centerY;
         
         // 设置按钮视图
         UIView* btnView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 100, 20)];
+        btnView.tag = 9999;
         
         // 设置同意按钮
         UIButton* agreeBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 42, 20)];
         [agreeBtn setTitle:@"同意" forState:UIControlStateNormal];
         [agreeBtn setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
         [agreeBtn addTarget:self action:@selector(agreeAddFriend:) forControlEvents:UIControlEventTouchUpInside];
+        agreeBtn.tag = 10000;
         
         
         // 设置拒绝按钮
@@ -80,6 +84,7 @@
         [rejectBtn setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
         [rejectBtn addTarget:self action:@selector(rejectAddFriend:) forControlEvents:UIControlEventTouchUpInside];
         rejectBtn.left = agreeBtn.right + 3;
+        rejectBtn.tag = 10001;
         
         [btnView addSubview:rejectBtn];
         [btnView addSubview:agreeBtn];
@@ -120,10 +125,53 @@
 // TODO:获取用户完整信息，并显示头像等
 - (BOOL)shouldUpdateCellWithObject:(id)object
 {
-    if ([object isKindOfClass:[NSString class]]) {
-        NSString *contact = [NSString stringWithString:object];
+//    if ([object isKindOfClass:[NSString class]]) {
+//        NSString *contact = [NSString stringWithString:object];
+//        self.userJID = [NSString stringWithString:contact];
+//        self.userName.text = [self getUserName:contact];
+//    }
+    
+    if ([object isKindOfClass:[FriendInviteMsgModel class]]) {
+        FriendInviteMsgModel * friendModel = (FriendInviteMsgModel *)object;
+        NSString *contact = [NSString stringWithString:friendModel.userJid];
         self.userJID = [NSString stringWithString:contact];
+        NSLog(@"%@",friendModel.userJid);
         self.userName.text = [self getUserName:contact];
+        
+        NSData * photoData = [[XMPPManager sharedManager].xmppvCardAvatarModule photoDataForJID:[XMPPJID jidWithString:contact]];
+        if (photoData) {
+            self.headImage.image = [UIImage imageWithData:photoData];
+        }
+        
+        UILabel * infoLabel = (UILabel *)[self.contentView viewWithTag:10003];
+        
+        UIView * bgView = (UIView *)[self.contentView viewWithTag:9999];
+        
+        UIButton * agreeBtn = (UIButton *)[bgView viewWithTag:10000];
+        UIButton * rejectBtn = (UIButton *)[bgView viewWithTag:10001];
+
+        if ([friendModel.isWaitingAccept isEqualToString:@"1"]) {
+            
+            infoLabel.text = @"已经发送好友申请";
+
+            [agreeBtn setTitle:@"等待验证" forState:UIControlStateNormal];
+            agreeBtn.userInteractionEnabled = NO;
+            
+            [rejectBtn setTitle:@"" forState:UIControlStateNormal];
+            rejectBtn.userInteractionEnabled = NO;
+        }else{
+            // 设置同意按钮
+            agreeBtn.userInteractionEnabled = YES;
+            [agreeBtn setTitle:@"同意" forState:UIControlStateNormal];
+            [agreeBtn addTarget:self action:@selector(agreeAddFriend:) forControlEvents:UIControlEventTouchUpInside];
+            
+            
+            // 设置拒绝按钮
+            rejectBtn.userInteractionEnabled = YES;
+            [rejectBtn setTitle:@"拒绝" forState:UIControlStateNormal];
+            [rejectBtn setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+            [rejectBtn addTarget:self action:@selector(rejectAddFriend:) forControlEvents:UIControlEventTouchUpInside];
+        }
     }
     return YES;
 }
@@ -133,6 +181,26 @@
 {
     NSString *userName = [NSString stringWithFormat:@"%@", [userJID componentsSeparatedByString:@"@"][0]];
     return userName;
+}
+
+-(void)layoutSubviews{
+    [super layoutSubviews];
+    
+    UIView * bgView = (UIView *)[self.contentView viewWithTag:9999];
+    
+    UIButton * agreeBtn = (UIButton *)[bgView viewWithTag:10000];
+    UIButton * rejectBtn = (UIButton *)[bgView viewWithTag:10001];
+    
+    NSString * rejectStr = rejectBtn.titleLabel.text;
+    if ([rejectStr isEqualToString:@""]||!rejectStr||[rejectStr isEqual:[NSNull null]]) {
+        agreeBtn.frame = CGRectMake(0, 0, 100, 20);
+        rejectBtn.frame = CGRectZero;
+    }else{
+        agreeBtn.frame = CGRectMake(0, 0, 42, 20);
+        rejectBtn.frame = CGRectMake(45, 0, 42, 20);
+    }
+
+    
 }
 
 

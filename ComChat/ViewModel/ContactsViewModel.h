@@ -8,6 +8,7 @@
 
 #import "RVMViewModel.h"
 #import "XMPPManager.h"
+#import "FriendInviteMsgModel.h"
 
 @interface ContactsViewModel : RVMViewModel
 
@@ -18,12 +19,21 @@
 @property (nonatomic, strong) NSFetchedResultsController *fetchedGroupsResultsController;
 @property (nonatomic, strong) NSArray *searchResultArray;
 @property (nonatomic, readonly) NSNumber *unsubscribedCountNum;
+@property (nonatomic, strong) NSMutableArray *inviteContactsModel;
+
+//TODO: 李小涛添加
+@property (nonatomic,retain)NSManagedObjectContext * friendInviteContext;
+@property (nonatomic,retain)NSFetchedResultsController * fetchInviteListResultsController;
+
 
 + (instancetype)sharedViewModel;
 
 - (void)searchContacts:(NSString *)searchTerm;
 - (void)fetchUsers;
 - (void)fetchGroups;
+//TODO: lixiaotao tianjia
+- (void)fetchInviteList;
+-(void)deleteInviteUser:(NSString *)userJid;
 
 - (BOOL)isExistInContactsList:(NSString *)userJid;
 

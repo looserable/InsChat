@@ -11,6 +11,7 @@
 #import "XMPPManager.h"
 #import "Macros.h"
 #import "UIView+Toast.h"
+#import "ContactsViewModel.h"
 
 
 @interface FriendManageViewController ()
@@ -98,6 +99,8 @@
     [[[XMPPManager sharedManager] xmppRoster] acceptPresenceSubscriptionRequestFrom:userJID andAddToRoster:YES];
 
     [[XMPPManager sharedManager].xmppRoster addUser:userJID withNickname:userNickName groups:userGroupArray subscribeToPresence:YES];
+    
+    [self.navigationController popToRootViewControllerAnimated:YES];
     
 }
 

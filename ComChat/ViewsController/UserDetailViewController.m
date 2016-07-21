@@ -14,6 +14,8 @@
 #import "AddContactViewController.h"
 #import <MBProgressHUD.h>
 #import "XMPPvCardTemp.h"
+#import "FriendInviteMsgModel.h"
+#import "ContactsViewModel.h"
 
 
 @interface UserDetailViewController ()<MBProgressHUDDelegate>
@@ -338,25 +340,63 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 
-- (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence
+//- (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence
+//{
+//    NSLog(@"userDetailViewController接收到Presence %@", [presence description]);
+//    
+//    // 请求加自己为好友
+//    if ([[presence type] isEqualToString:@"subscribe"]) {
+//        [self.view makeToast:@"已发送好友邀请" duration:0.5 position:CSToastPositionTop];
+//        
+//        [self.navigationController popViewControllerAnimated:YES];
+//        
+//    } else if ([[presence type] isEqualToString:@"unsubscribe"]) {
+//        NSLog(@"已发送解除好友关系...");
+//        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DELETE_TALK object:@{@"contactId":self.userJID} userInfo:nil];
+//        [self.view makeToast:@"已发送解除好友关系" duration:0.5 position:CSToastPositionTop];
+//        
+//        [self.navigationController popToRootViewControllerAnimated:YES];
+//    }
+//}
+//TODO: 李小涛添加，用来解决添加好友和解除好友之后的一系列问题。
+- (void)xmppStream:(XMPPStream *)sender didSendIQ:(XMPPIQ *)iq
 {
-    NSLog(@"userDetailViewController接收到Presence %@", [presence description]);
-    
-    // 请求加自己为好友
-    if ([[presence type] isEqualToString:@"subscribe"]) {
-        [self.view makeToast:@"已发送好友邀请" duration:0.5 position:CSToastPositionTop];
-        
-        [self.navigationController popViewControllerAnimated:YES];
-        
-    } else if ([[presence type] isEqualToString:@"unsubscribe"]) {
-        NSLog(@"已发送解除好友关系...");
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DELETE_TALK object:@{@"contactId":self.userJID} userInfo:nil];
-        [self.view makeToast:@"已发送解除好友关系" duration:0.5 position:CSToastPositionTop];
-        
-        [self.navigationController popToRootViewControllerAnimated:YES];
-    }
-}
+    NSLog(@"//user//XMPPManager xmppStream已发送IQ包%@",iq);
+    for (NSXMLElement * query in iq.children) {
+        for (NSXMLElement * item in query.children) {
+            NSString * name = item.attributesAsDictionary[@"name"];
+            if (name) {
+                [self.view makeToast:@"已发送好友邀请" duration:0.5 position:CSToastPositionTop];
+                #pragma mark --发送好友请求之后，缓存到本地。
+                ContactsViewModel * contact = [ContactsViewModel sharedViewModel];
+                FriendInviteMsgModel * friendMsg = [NSEntityDescription insertNewObjectForEntityForName:@"FriendInviteMsgModel" inManagedObjectContext:contact.friendInviteContext];
+                friendMsg.userJid = item.attributesAsDictionary[@"jid"];
+                friendMsg.isRead = @"0";
+                friendMsg.isInvited = @"0";
+                friendMsg.isWaitingAccept = @"1";
+                friendMsg.keyId = [NSString stringWithFormat:@"%zi",contact.inviteContactsModel.count + 1];
+                [contact.inviteContactsModel addObject:friendMsg];
+                
+                NSError * error = nil;
+                if ([contact.friendInviteContext save:&error]) {
+                    NSLog(@"好友邀请，保存失败了");
+                }
 
+                [self.navigationController popToRootViewControllerAnimated:YES];
+
+            }else if([item.attributesAsDictionary[@"subscription"] isEqualToString:@"remove"]){
+                NSLog(@"已发送解除好友关系...");
+                [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DELETE_TALK object:@{@"contactId":self.userJID} userInfo:nil];
+                [self.view makeToast:@"已发送解除好友关系" duration:0.5 position:CSToastPositionTop];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+
+            }
+        }
+    }
+    
+    
+    
+}
 
 /*- (void)xmppRoster:(XMPPRoster *)sender didReceiveRosterItem:(NSXMLElement *)item
 {

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5270A4561D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5270A4541D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodeld */; };
+		5270A4611D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 5270A45E1D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.m */; };
+		5270A4621D3CAE69003D4FF5 /* FriendInviteMsgModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5270A4601D3CAE69003D4FF5 /* FriendInviteMsgModel.m */; };
 		74A68D35106C7E32C5701AFF /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42E9D3704E40491EBF2C65EC /* libPods.a */; };
 		A73BA9121B4FBF17001ACA1C /* RecentRoomsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A73BA9111B4FBF17001ACA1C /* RecentRoomsCell.m */; };
 		A73BA9151B4FEC8B001ACA1C /* GroupChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A73BA9141B4FEC8B001ACA1C /* GroupChatViewController.m */; };
@@ -306,6 +309,11 @@
 /* Begin PBXFileReference section */
 		42E9D3704E40491EBF2C65EC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5221C8191D3367CD00076E1E /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = usr/lib/libxml2.2.tbd; sourceTree = SDKROOT; };
+		5270A4551D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FriendInviteModel.xcdatamodel; sourceTree = "<group>"; };
+		5270A45D1D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FriendInviteMsgModel+CoreDataProperties.h"; sourceTree = "<group>"; };
+		5270A45E1D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "FriendInviteMsgModel+CoreDataProperties.m"; sourceTree = "<group>"; };
+		5270A45F1D3CAE69003D4FF5 /* FriendInviteMsgModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendInviteMsgModel.h; sourceTree = "<group>"; };
+		5270A4601D3CAE69003D4FF5 /* FriendInviteMsgModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendInviteMsgModel.m; sourceTree = "<group>"; };
 		69D8278A9F292E217A5AAC47 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		A73BA9101B4FBF17001ACA1C /* RecentRoomsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecentRoomsCell.h; path = ComChat/ViewsController/Views/RecentRoomsCell.h; sourceTree = "<group>"; };
 		A73BA9111B4FBF17001ACA1C /* RecentRoomsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RecentRoomsCell.m; path = ComChat/ViewsController/Views/RecentRoomsCell.m; sourceTree = "<group>"; };
@@ -1047,12 +1055,17 @@
 		A7AB1E921B1EFA460003BD2F /* DataBase */ = {
 			isa = PBXGroup;
 			children = (
+				5270A45D1D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.h */,
+				5270A45E1D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.m */,
+				5270A45F1D3CAE69003D4FF5 /* FriendInviteMsgModel.h */,
+				5270A4601D3CAE69003D4FF5 /* FriendInviteMsgModel.m */,
 				A77803381B622660005BB5E3 /* NewsCoreDataStorageObject.h */,
 				A77803391B622660005BB5E3 /* NewsCoreDataStorageObject.m */,
 				A785F1581B297B62006DC91F /* RealTimeNews.xcdatamodeld */,
 				A783FF531B5BC71F009B6D04 /* RealTimeMonitoring.xcdatamodeld */,
 				A783FF591B5BD46D009B6D04 /* XMPPRoomInvite.xcdatamodeld */,
 				A783FF5C1B5BD51A009B6D04 /* XMPPRosterInvite.xcdatamodeld */,
+				5270A4541D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodeld */,
 			);
 			name = DataBase;
 			sourceTree = "<group>";
@@ -1599,12 +1612,14 @@
 				A7567BD31B37134D00A5A361 /* SearchDisplayController.m in Sources */,
 				A75E55971B42C9EA006249DF /* InviteUserCell.m in Sources */,
 				A78486311B54ADED00DDDADA /* XMPPRoomManager.m in Sources */,
+				5270A4611D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.m in Sources */,
 				A73BA9121B4FBF17001ACA1C /* RecentRoomsCell.m in Sources */,
 				A785EF431B28259C006DC91F /* UIImage+Utils.m in Sources */,
 				A7EC9C531B27163600D70041 /* ResourceManager.m in Sources */,
 				A7AB1F211B2166E20003BD2F /* RTMonitoringViewController.m in Sources */,
 				A7608A1A1B2567F5009B20AA /* UIViewAdditions.m in Sources */,
 				A77803401B623093005BB5E3 /* NewsDetailWebViewController.m in Sources */,
+				5270A4561D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodeld in Sources */,
 				A7E21C501B2C193A005F524A /* NewFriendsCell.m in Sources */,
 				A783FF5B1B5BD46D009B6D04 /* XMPPRoomInvite.xcdatamodeld in Sources */,
 				A7AB1EA01B1F521B0003BD2F /* XMPPManager.m in Sources */,
@@ -1677,6 +1692,7 @@
 				A7EC9C171B25C65700D70041 /* AudioRecordPlayManager.m in Sources */,
 				A7EC9C141B25970C00D70041 /* ParserKeyword.m in Sources */,
 				A7EC9C341B26E93E00D70041 /* EmotionManager.m in Sources */,
+				5270A4621D3CAE69003D4FF5 /* FriendInviteMsgModel.m in Sources */,
 				A7DFA7D81B1EB7B200D6F521 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1957,6 +1973,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
+		5270A4541D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5270A4551D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodel */,
+			);
+			currentVersion = 5270A4551D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodel */;
+			path = FriendInviteModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 		A783FF531B5BC71F009B6D04 /* RealTimeMonitoring.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (

@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "FriendInviteMsgModel.h"
+#import "XMPPManager.h"
+#import "XMPPJID.h"
 @protocol NewFriendsDelegate;
 
 

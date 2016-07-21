@@ -39,7 +39,7 @@
 
 - (void)deleteObjectAtIndexPath:(NSIndexPath *)indexPath;
 - (void)deleteObjectOfRoomAtIndexPath:(NSIndexPath *)indexPath;
-
+//TODO: 李小涛添加，用来解决好友删除之后，和它的会话不能删除的问题
 - (void)deleteTalkWithJidStr:(NSString *)userJid;
 
 @end

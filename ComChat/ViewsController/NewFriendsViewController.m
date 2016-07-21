@@ -12,9 +12,10 @@
 #import "NewFriendsCell.h"
 #import "UIViewAdditions.h"
 #import "FriendManageViewController.h"
+#import "FriendInviteMsgModel.h"
 
 
-@interface NewFriendsViewController ()<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate>
+@interface NewFriendsViewController ()<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate,NewFriendsDelegate>
 
 @property (nonatomic, strong) NewFriendsCell *addFriendsCell;
 
@@ -154,6 +155,9 @@
 #pragma mark 同意添加好友
 - (void)agreeAddFriend:(NSString *)userJID {
     NSLog(@"同意添加好友");
+    //本地删除
+    [self.contactsViewModel deleteInviteUser:userJID];
+    
     XMPPJID *userJid = [XMPPJID jidWithString:userJID];
     
     
@@ -180,6 +184,9 @@
 #pragma mark 拒绝添加好友
 - (void)rejectAddFriend:(NSString *)userJID {
     NSLog(@"拒绝添加好友");
+    //本地删除
+    [self.contactsViewModel deleteInviteUser:userJID];
+    
     XMPPJID *userJid = [XMPPJID jidWithString:userJID];
     [[[XMPPManager sharedManager] xmppRoster] rejectPresenceSubscriptionRequestFrom:userJid];
 }
@@ -221,6 +228,8 @@
 
 #pragma mark 返回分组中成员个数
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    NSLog(@"!!!!!newsFriendsSectionCount数量为：%zi",[self.contactsViewModel numberOfNewItemsInSection:section]);
     return [self.contactsViewModel numberOfNewItemsInSection:section];
 }
 
@@ -248,11 +257,20 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
+        id object = [self.contactsViewModel objectAtNewIndexPath:indexPath];
+        if ([object isKindOfClass:[FriendInviteMsgModel class]]) {
+            FriendInviteMsgModel * friendModel = (FriendInviteMsgModel *)object;
+            NSString *contact = [NSString stringWithString:friendModel.userJid];
+            [[ContactsViewModel sharedViewModel] deleteInviteUser:contact];
+            
+        }
+
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
+
 
 
 
