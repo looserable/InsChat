@@ -16,6 +16,7 @@
 
 
 
+
 @interface MessageViewModel()<NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) RACSubject *updatedContentSignal;
@@ -318,6 +319,7 @@
     } else {
         [self.totalRoomsMessageArray removeAllObjects];
         
+        //XMPPRoomOccupantCoreDataStorageObject
         if ([self.fetchedRecentRoomsResultsController fetchedObjects].count > 0) {
             for (XMPPRoomMessageCoreDataStorageObject *roomMessage in [self.fetchedRecentRoomsResultsController fetchedObjects]) {
                 if (![self isExistedInRoomsMessageArray:self.totalRoomsMessageArray toRoomJid:roomMessage.roomJIDStr]) {
@@ -390,13 +392,34 @@
             
             totalUnreadCount = totalUnreadCount + contact.unreadMessages.intValue;
         }
-        self.totalUnreadMessagesNum = [NSNumber numberWithInt:totalUnreadCount];
+        self.totalUnreadMessagesNum = [NSNumber numberWithInteger:totalUnreadCount];
     }
-    //[(RACSubject *)self.updatedContentSignal sendNext:nil];
+//    [(RACSubject *)self.updatedContentSignal sendNext:nil];
 }
 
 
 #pragma mark 更新群组显示名称
+//- (void)updateRoomDisplayName
+//{
+//    NSLog(@"更新群组displayName...");
+//    NSArray *array = [self.fetchedRecentRoomsResultsController fetchedObjects];
+//    NSInteger totalUnreadCount = 0;
+//    
+//    if (array.count > 0) {
+//        XMPPRoomOccupantCoreDataStorageObject *roomOccupant = nil;
+//        for (XMPPRoomOccupantCoreDataStorageObject *occupant in array) {
+//            roomOccupant = [[XMPPManager sharedManager].xmppRoomCoreDataStorage occupantForJID:occupant.jid stream:[XMPPManager sharedManager].xmppStream inContext:[XMPPManager sharedManager].managedObjectContext_room];
+//            occupant.displayName = roomOccupant.roomJIDStr;
+//            occupant.unreadMessages = roomOccupant.unreadMessages;
+//            
+//            totalUnreadCount = totalUnreadCount + occupant.unreadMessages.intValue;
+//        }
+//        //TODO: 避免了当有群组存在的情况下，在updateusername的时候totalmessageNum被赋值之后，在这里可能被重新置为0的问题。
+//        self.totalUnreadMessagesNum = [NSNumber numberWithInteger:self.totalUnreadMessagesNum.integerValue + totalUnreadCount];
+//    }
+//    //[(RACSubject *)self.updatedContentSignal sendNext:nil];
+//}
+//TODO: 李小涛：这里进行了修改。
 - (void)updateRoomDisplayName
 {
     NSLog(@"更新群组displayName...");
@@ -404,15 +427,16 @@
     NSInteger totalUnreadCount = 0;
     
     if (array.count > 0) {
-        XMPPRoomOccupantCoreDataStorageObject *roomOccupant = nil;
-        for (XMPPRoomOccupantCoreDataStorageObject *occupant in array) {
-            roomOccupant = [[XMPPManager sharedManager].xmppRoomCoreDataStorage occupantForJID:occupant.jid stream:[XMPPManager sharedManager].xmppStream inContext:[XMPPManager sharedManager].managedObjectContext_room];
-            occupant.displayName = roomOccupant.roomJIDStr;
-            occupant.unreadMessages = roomOccupant.unreadMessages;
+        XMPPRoomMessageCoreDataStorageObject *roomMsg = nil;
+        for (XMPPRoomMessageCoreDataStorageObject *occupant in array) {
+            roomMsg = occupant;
+            occupant.displayName = roomMsg.roomJID.user;
+            occupant.unreadMessages = roomMsg.unreadMessages;
             
             totalUnreadCount = totalUnreadCount + occupant.unreadMessages.intValue;
         }
-        self.totalUnreadMessagesNum = [NSNumber numberWithInt:totalUnreadCount];
+        //TODO: 避免了当有群组存在的情况下，在updateusername的时候totalmessageNum被赋值之后，在这里可能被重新置为0的问题。
+        self.totalUnreadMessagesNum = [NSNumber numberWithInteger:self.totalUnreadMessagesNum.integerValue + totalUnreadCount];
     }
     //[(RACSubject *)self.updatedContentSignal sendNext:nil];
 }
@@ -446,8 +470,8 @@
 - (void)setPredicateForFetchRooms
 {
     NSPredicate *filterPredicate1 = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"streamBareJidStr = '%@'", [XMPPManager sharedManager].myJID.bare]];
-    NSPredicate *filterPredicate2 = [NSPredicate predicateWithFormat:@"affiliation != 'none'"];
-    NSArray *subPredicates = [NSArray arrayWithObjects:filterPredicate1, filterPredicate2, nil];
+//    NSPredicate *filterPredicate2 = [NSPredicate predicateWithFormat:@"affiliation != 'none'"];
+    NSArray *subPredicates = [NSArray arrayWithObjects:filterPredicate1, nil];
     NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subPredicates];
     [self.fetchedRecentRoomsResultsController.fetchRequest setPredicate:predicate];
 }
@@ -458,10 +482,10 @@
 {
     NSLog(@"获取当前通信群组，按时间倒序返回...");
     if (!_fetchedRecentRoomsResultsController) {
-        //NSEntityDescription *entity = [NSEntityDescription entityForName:@"XMPPRoomMessageCoreDataStorageObject" inManagedObjectContext:self.roomModel];
-        //NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"localTimestamp" ascending:NO];       // 按时间排序
-        NSEntityDescription *entity = [NSEntityDescription entityForName:@"XMPPRoomOccupantCoreDataStorageObject" inManagedObjectContext:self.roomModel];
-        NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"createdAt" ascending:NO];       // 按时间排序
+        NSEntityDescription *entity = [NSEntityDescription entityForName:@"XMPPRoomMessageCoreDataStorageObject" inManagedObjectContext:self.roomModel];
+        NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"localTimestamp" ascending:NO];       // 按时间排序
+//        NSEntityDescription *entity = [NSEntityDescription entityForName:@"XMPPRoomOccupantCoreDataStorageObject" inManagedObjectContext:self.roomModel];
+//        NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"createdAt" ascending:NO];       // 按时间排序
         NSArray *sortDescriptors = [NSArray arrayWithObjects:sd, nil];
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];

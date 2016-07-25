@@ -9,6 +9,7 @@
 #import "RVMViewModel.h"
 #import "XMPPMessageArchiving_Contact_CoreDataObject+RecentContact.h"
 #import "XMPPRoomOccupantCoreDataStorageObject+RencentOccupant.h"
+#import "XMPPRoomMessageCoreDataStorageObject+RencentOccupant.h"
 
 
 @interface MessageViewModel : RVMViewModel

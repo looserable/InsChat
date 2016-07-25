@@ -341,7 +341,7 @@
         
         //XMPPRoomMessageCoreDataStorageObject *roomMessage = [self.messageViewModel objectAtIndexPath:indexPath];
         XMPPRoomMessageCoreDataStorageObject *roomMessage = (XMPPRoomMessageCoreDataStorageObject *)object;
-        GroupChatViewController *groupChatViewController = [[GroupChatViewController alloc] initWithGroupJID:roomMessage.roomJID groupName:roomMessage.roomJIDStr];                 // TODO:改为群组名称
+        GroupChatViewController *groupChatViewController = [[GroupChatViewController alloc] initWithGroupJID:roomMessage.roomJID groupName:roomMessage.displayName];                 // TODO:改为群组名称
         [self.navigationController pushViewController:groupChatViewController animated:YES];
         
         /*

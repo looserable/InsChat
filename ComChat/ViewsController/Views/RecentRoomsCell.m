@@ -13,6 +13,7 @@
 #import "ChatMessageEntityFactory.h"
 #import "NSDate+IM.h"
 #import "XMPPRoomOccupantCoreDataStorageObject+RencentOccupant.h"
+#import "XMPPRoomMessageCoreDataStorageObject+RencentOccupant.h"
 
 
 @interface RecentRoomsCell() {
@@ -27,6 +28,7 @@
 @property (nonatomic, strong) JSCustomBadge *badgeView;
 
 @property (nonatomic, strong) XMPPRoomOccupantCoreDataStorageObject *roomOccupant;
+@property (nonatomic, strong) XMPPRoomMessageCoreDataStorageObject * roomMsg;
 
 @end
 
@@ -152,8 +154,8 @@
     if ([object isKindOfClass:[XMPPRoomMessageCoreDataStorageObject class]]) {
         
         XMPPRoomMessageCoreDataStorageObject* cont = (XMPPRoomMessageCoreDataStorageObject*)object;
-        self.roomOccupant = cont;
-        self.roomName.text = self.roomOccupant.displayName ? self.roomOccupant.displayName : self.roomOccupant.roomJIDStr;
+        self.roomMsg = cont;
+        self.roomName.text = self.roomMsg.displayName ? self.roomMsg.displayName : self.roomMsg.roomJIDStr;
         self.roomMessage.text = [ChatMessageEntityFactory recentContactLastMessageFromJSONString:cont.body];
         self.dateLabel.text = [cont.localTimestamp formatRencentContactDate];
         //[self.headImage setImageWithURL:[NSURL URLWithString:HEAD_IMAGE(contact.bareJid.user)] placeholderImage:[UIImage imageNamed:@"user_head_default"]];

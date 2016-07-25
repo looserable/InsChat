@@ -16,7 +16,7 @@
 #import <ReactiveCocoa.h>
 #import "MainTabBarController.h"
 
-@interface SignInViewController ()<UITextFieldDelegate>
+@interface SignInViewController ()<UITextFieldDelegate,MBProgressHUDDelegate>
 {
     NSString *userID;
     NSString *userPW;

@@ -10,6 +10,7 @@
 		5270A4561D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5270A4541D3CA5DA003D4FF5 /* FriendInviteModel.xcdatamodeld */; };
 		5270A4611D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 5270A45E1D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.m */; };
 		5270A4621D3CAE69003D4FF5 /* FriendInviteMsgModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5270A4601D3CAE69003D4FF5 /* FriendInviteMsgModel.m */; };
+		5271FF331D421D8100810B38 /* XMPPRoomMessageCoreDataStorageObject+RencentOccupant.m in Sources */ = {isa = PBXBuildFile; fileRef = 5271FF321D421D8100810B38 /* XMPPRoomMessageCoreDataStorageObject+RencentOccupant.m */; };
 		74A68D35106C7E32C5701AFF /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42E9D3704E40491EBF2C65EC /* libPods.a */; };
 		A73BA9121B4FBF17001ACA1C /* RecentRoomsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A73BA9111B4FBF17001ACA1C /* RecentRoomsCell.m */; };
 		A73BA9151B4FEC8B001ACA1C /* GroupChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A73BA9141B4FEC8B001ACA1C /* GroupChatViewController.m */; };
@@ -314,6 +315,8 @@
 		5270A45E1D3CAE69003D4FF5 /* FriendInviteMsgModel+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "FriendInviteMsgModel+CoreDataProperties.m"; sourceTree = "<group>"; };
 		5270A45F1D3CAE69003D4FF5 /* FriendInviteMsgModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendInviteMsgModel.h; sourceTree = "<group>"; };
 		5270A4601D3CAE69003D4FF5 /* FriendInviteMsgModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendInviteMsgModel.m; sourceTree = "<group>"; };
+		5271FF311D421D8100810B38 /* XMPPRoomMessageCoreDataStorageObject+RencentOccupant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "XMPPRoomMessageCoreDataStorageObject+RencentOccupant.h"; sourceTree = "<group>"; };
+		5271FF321D421D8100810B38 /* XMPPRoomMessageCoreDataStorageObject+RencentOccupant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "XMPPRoomMessageCoreDataStorageObject+RencentOccupant.m"; sourceTree = "<group>"; };
 		69D8278A9F292E217A5AAC47 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		A73BA9101B4FBF17001ACA1C /* RecentRoomsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecentRoomsCell.h; path = ComChat/ViewsController/Views/RecentRoomsCell.h; sourceTree = "<group>"; };
 		A73BA9111B4FBF17001ACA1C /* RecentRoomsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RecentRoomsCell.m; path = ComChat/ViewsController/Views/RecentRoomsCell.m; sourceTree = "<group>"; };
@@ -1196,6 +1199,8 @@
 				A73EA1F21B3BA1C600DF6CCA /* XMPPMessage+Signaling.m */,
 				A778033B1B62276E005BB5E3 /* NewsMessageEntity.h */,
 				A778033C1B62276E005BB5E3 /* NewsMessageEntity.m */,
+				5271FF311D421D8100810B38 /* XMPPRoomMessageCoreDataStorageObject+RencentOccupant.h */,
+				5271FF321D421D8100810B38 /* XMPPRoomMessageCoreDataStorageObject+RencentOccupant.m */,
 			);
 			name = Entities;
 			sourceTree = "<group>";
@@ -1625,6 +1630,7 @@
 				A7AB1EA01B1F521B0003BD2F /* XMPPManager.m in Sources */,
 				A7EC9C391B26F1C500D70041 /* EmotionEntity.m in Sources */,
 				A7BB1B4D1B3151D7006FE5A6 /* MonitorsCell.m in Sources */,
+				5271FF331D421D8100810B38 /* XMPPRoomMessageCoreDataStorageObject+RencentOccupant.m in Sources */,
 				A7751A711B33CB2100D67AB6 /* NSDateAdditions.m in Sources */,
 				A7AB1EE01B206B430003BD2F /* ChatViewController.m in Sources */,
 				A7751A6D1B33C88A00D67AB6 /* NSStringAdditions.m in Sources */,
